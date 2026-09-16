@@ -1,11 +1,28 @@
 # Analysis scripts
 
-This directory is reserved for the executable R workflow used to reproduce the project.
+## `GSE141044_APP23_full_project.R`
 
-Planned canonical script:
+This is the exact cumulative R project script used during the APP23 hippocampal single-nucleus RNA-seq analysis. It is retained as the primary executable/provenance record rather than reconstructing code from narrative summaries.
 
-`APP23_snRNAseq_complete_analysis.R`
+The script includes:
 
-The final script should preserve the analysis actually run for the project, including the non-standard GSE141044 dense-matrix import, QC verification, Seurat preprocessing, resolution 0.5 clustering, UMAP, annotation, edgeR pseudobulk analysis, ranked GO-BP GSEA, DoRothEA/decoupleR TF analysis, and the 24-month CellChat comparison.
+- corrected import of the non-standard GSE141044 dense expression matrix
+- metadata construction for the 11 biological samples
+- QC verification using the study-compatible gene/transcript thresholds
+- Seurat normalization and 2,000 highly variable genes
+- PCA and PC selection
+- graph-based clustering with the selected resolution 0.5
+- UMAP visualization only; no t-SNE is used
+- marker analysis and neuronal subtype annotation
+- mouse/sample-level pseudobulk differential expression with edgeR
+- ranked GO Biological Process GSEA with clusterProfiler
+- DoRothEA/decoupleR TF activity inference and limma testing
+- descriptive 24-month CellChat WT-versus-APP23 analysis
+- targeted cholesterol/desmosterol CellChat summaries
+- final figure generation and PDF-to-PNG figure conversion
 
-The complete executable script is intentionally not reconstructed from prose summaries alone. It should be committed from the exact final R code used for the analysis so that repository code and reported results remain synchronized.
+### Important provenance note
+
+The file preserves the cumulative analysis history and therefore contains earlier exploratory/troubleshooting blocks as well as the corrected final workflow. When an earlier block conflicts with a later explicitly corrected block, the later corrected workflow represents the analysis used for final interpretation.
+
+Large raw GEO files and serialized R objects are intentionally excluded from version control.
