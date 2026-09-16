@@ -1,63 +1,120 @@
 # APP23 hippocampal single-nucleus RNA-seq
 
-Reproducible analysis of hippocampal neuronal subtype-specific transcriptional remodeling in the APP23 mouse model using GEO dataset **GSE141044**.
+**Age- and neuronal-subtype-dependent transcriptional remodeling in the APP23 mouse hippocampus**
 
-## Study overview
+Reproducible analysis of GEO dataset **GSE141044** using Seurat, mouse-level pseudobulk differential expression, ranked GO Biological Process GSEA, DoRothEA/decoupleR transcription-factor activity inference, and CellChat.
 
-This repository contains the completed course-project analysis examining age- and neuronal-subtype-dependent transcriptional remodeling in APP23 hippocampal neurons. The workflow starts from the processed GSE141044 expression matrix and includes QC verification, Seurat normalization and clustering, UMAP visualization, neuronal annotation, mouse-level pseudobulk differential expression, ranked GO Biological Process GSEA, transcription-factor activity inference, and descriptive CellChat neuron-to-neuron communication analysis.
+## Biological question
 
-**Primary question:** Which hippocampal neuronal subtypes exhibit the strongest pathway-level transcriptional remodeling in APP23 mice, and which biological programs distinguish susceptible from relatively preserved neuronal populations?
+**Which hippocampal neuronal subtypes exhibit the strongest pathway-level transcriptional remodeling in APP23 mice, and which biological programs distinguish susceptible from relatively preserved neuronal populations?**
 
-## Dataset
+## Source dataset
 
-- GEO accession: `GSE141044`
-- Organism: *Mus musculus*
-- Starting processed dataset: 3,280 neuronal nuclei from 11 biological samples
-- Ages: 6 and 24 months
-- Genotypes: WT and APP23
-- Source publication: Zhong et al. (2020), *Single-nucleus RNA sequencing reveals transcriptional changes of hippocampal neurons in APP23 mouse model of Alzheimer's disease*.
+- **GEO:** GSE141044
+- **Organism:** *Mus musculus*
+- **Dataset:** 3,280 neuronal nuclei from 11 biological samples
+- **Ages:** 6 and 24 months
+- **Genotypes:** WT and APP23
+- **Publication:** Zhong et al. (2020), *Single-nucleus RNA sequencing reveals transcriptional changes of hippocampal neurons in APP23 mouse model of Alzheimer's disease*
+- **Input:** processed neuronal expression matrix deposited in GEO
 
-Large GEO source files are intentionally not stored in this repository. See `data/README.md` for acquisition details.
+Large source files are intentionally excluded from Git. Acquisition and import details are documented in `data/README.md` and the analysis script.
 
-## Analysis workflow
+## Analysis roadmap
 
-1. Non-standard GSE141044 dense-matrix import and metadata construction
-2. QC verification
-3. Log normalization and selection of 2,000 highly variable genes
-4. PCA and graph-based clustering
-5. UMAP visualization (**no t-SNE**)
-6. Fine-cluster marker analysis and broad neuronal annotation
-7. Mouse-level pseudobulk differential expression with edgeR
-8. Ranked GO Biological Process GSEA with clusterProfiler
-9. TF activity inference with DoRothEA/decoupleR and sample-level testing with limma
-10. Descriptive 24-month WT-versus-APP23 CellChat analysis
+```text
+GSE141044 processed neuronal matrix
+              │
+              ▼
+       QC verification
+              │
+              ▼
+ Normalization + 2,000 HVGs
+              │
+              ▼
+         PCA (PCs 1–10)
+              │
+              ▼
+ Graph clustering (resolution 0.5)
+              │
+              ▼
+          UMAP only
+              │
+              ▼
+ Marker-based neuronal annotation
+              │
+       ┌──────┼────────┐
+       ▼      ▼        ▼
+ Pseudobulk  GSEA   TF activity
+   edgeR            DoRothEA/
+                   decoupleR
+       │      │        │
+       └──────┼────────┘
+              ▼
+  Biological interpretation
+              │
+              ▼
+  24-month CellChat analysis
+```
 
-The complete analysis history is preserved in `scripts/GSE141044_APP23_full_project.R`.
+Primary inferential analyses use four broad neuronal populations: **DG, CA1-like, CA3, and inhibitory neurons**. The 10-cluster solution is retained for exploratory visualization and marker characterization.
 
-## Broad neuronal populations
+## Main figures
 
-Primary inferential analyses use four broad populations: `DG`, `CA1_like`, `CA3`, and `Inhibitory`. The 10-cluster solution is retained for exploratory visualization and marker characterization.
+### Figure 1 — Neuronal clustering and annotation
+
+![Figure 1: UMAP clustering, broad neuronal subtypes, and marker expression](figures/main/Figure_1_combined.png)
+
+**A.** UMAP of the 10 fine neuronal clusters. **B.** Broad annotation into DG, CA1-like, CA3, and inhibitory neurons. **C.** Canonical marker expression supporting annotation.
+
+### Figure 2 — Pathway-level remodeling across age and neuronal subtype
+
+![Figure 2: pathway remodeling summary](figures/main/Figure_2_pathway_remodeling.png)
+
+The strongest FDR-defined pathway remodeling occurs in DG neurons and in 24-month CA1-like neurons. DG shows early synaptic/vesicle disruption followed by later structural and synaptic remodeling, whereas late CA1-like neurons show a prominent sterol/cholesterol-associated program.
+
+### Figure 3 — APP23-associated neuronal communication rewiring
+
+![Figure 3: CellChat APP23 minus WT interaction strength](figures/main/Figure_3_CellChat_strength_difference.png)
+
+CellChat analysis of 24-month neuronal populations indicates communication **rewiring rather than a uniform global increase**. The analysis is descriptive because nuclei are pooled by condition and the source dataset contains neuronal nuclei only.
+
+### Figure 4 — Cholesterol/desmosterol-associated inferred signaling
+
+![Figure 4: cholesterol and desmosterol CellChat comparison](figures/main/Figure_4_Cholesterol_Desmosterol_CellChat.png)
+
+Targeted CellChat analysis shows condition-associated differences in inferred cholesterol/desmosterol signaling. These observations are interpreted separately from the intracellular CA1-like sterol GSEA signal and are not evidence of a causal relationship.
 
 ## Main findings
 
-APP23-associated remodeling is subtype- and age-dependent. DG neurons show early depletion of synaptic transmission and synaptic-vesicle programs and later synaptic/structural remodeling. CA1-like neurons show pronounced cholesterol/sterol-associated pathway enrichment at 24 months. CA3 and inhibitory populations show comparatively limited FDR-significant pathway changes under the primary ranked-GSEA criterion.
+### DG neurons
+At 6 months, APP23 DG neurons show FDR-significant depletion of synaptic transmission and synaptic-vesicle programs. At 24 months, the dominant DG signal shifts toward synapse organization, neuron projection development, and structural remodeling.
 
-TF activity inference produced no FDR-significant differential TF activities; Srebf2 is therefore treated only as an exploratory candidate consistent with the late CA1-like sterol program. CellChat indicates reorganization of inferred neuronal communication rather than a uniform increase in signaling, including altered cholesterol/desmosterol-associated signaling.
+### CA1-like neurons
+The strongest late CA1-like phenotype is enrichment of **cholesterol/sterol biosynthetic programs** at 24 months, including lathosterol-, desmosterol-, and zymosterol-associated terms.
 
-See `docs/RESULTS_SUMMARY.md` for a concise interpretation and limitations.
+### CA3 and inhibitory neurons
+These populations show comparatively limited FDR-significant pathway remodeling under the primary ranked-GSEA criterion. This means they are relatively preserved by this statistical definition, not biologically unaffected.
 
-## Reproducibility notes
+### Transcription-factor activity
+No TF activity comparison survives FDR correction. **Srebf2** is retained only as an exploratory candidate because its positive 24-month CA1-like activity estimate is biologically consistent with the independent sterol/cholesterol GSEA result.
 
-Biological replication is defined at the mouse/sample level rather than treating individual nuclei as independent replicates. No Harmony/integration correction is applied in the primary workflow. The processed matrix contains no mitochondrial features suitable for mitochondrial-percentage filtering. Primary pathway and TF ranking sensitivity analyses exclude exact uppercase `APP` and `Thy1` because these signals are closely associated with the APP23 construct; endogenous title-case `App` is retained.
+### CellChat
+The 24-month comparison suggests broader reorganization of inferred neuron-to-neuron communication. Because the dataset contains neuronal nuclei only and the analysis pools nuclei by condition, CellChat is treated as descriptive rather than replicate-level statistical inference.
 
-CellChat is interpreted descriptively because condition-level objects pool nuclei across biological samples and the dataset contains neuronal nuclei only. Inferred signaling therefore represents neuron-to-neuron communication rather than the full hippocampal cellular environment.
+## Statistical principles
+
+Biological replication is defined at the **mouse/sample level**, not at the nucleus level. Pseudobulk differential expression therefore aggregates raw counts by sample and broad neuronal subtype before edgeR testing.
+
+Strict pseudobulk DE produced relatively few FDR-significant individual genes, so the main biological interpretation emphasizes ranked pathway analysis rather than using nuclei as pseudoreplicates or overstating DEG counts.
+
+Exact uppercase `APP` and `Thy1` are excluded from primary pathway/TF ranking sensitivity analyses because they are closely associated with the APP23 construct. Endogenous title-case `App` is retained.
 
 ## Repository structure
 
 ```text
 APP23-hippocampal-snRNAseq/
 ├── README.md
-├── .gitignore
 ├── CITATION.cff
 ├── data/
 │   └── README.md
@@ -66,19 +123,10 @@ APP23-hippocampal-snRNAseq/
 │   └── GSE141044_APP23_full_project.R
 ├── results/
 │   ├── README.md
-│   └── CellChat/...
+│   └── CellChat/
 ├── figures/
 │   ├── main/
-│   │   ├── Figure_1_combined.png
-│   │   ├── Figure_1A_UMAP_10_clusters.png
-│   │   ├── Figure_1B_UMAP_broad_subtypes.png
-│   │   ├── Figure_1C_marker_DotPlot.png
-│   │   ├── Figure_2_pathway_remodeling.png
-│   │   ├── Figure_3_CellChat_strength_difference.png
-│   │   └── Figure_4_Cholesterol_Desmosterol_CellChat.png
 │   └── supplementary/
-│       ├── APP23_snRNAseq_Supplementary_Figures_FINAL.pdf
-│       └── APP23_snRNAseq_Supplementary_Figures_FINAL.docx
 └── docs/
     ├── METHODS.md
     ├── ANALYSIS_WORKFLOW.md
@@ -86,8 +134,39 @@ APP23-hippocampal-snRNAseq/
     └── APP23_snRNAseq_full_manuscript_draft.docx
 ```
 
-## Repository status
+## Reproduction
 
-The full R analysis script, final main figures, assembled supplementary figures, manuscript draft, methods/workflow documentation, and version-controlled summary results are deposited here. Raw GEO files and large serialized R objects are intentionally excluded.
+1. Clone the repository.
+2. Obtain the processed GSE141044 supplementary files from GEO as described in `data/README.md`.
+3. Open `scripts/GSE141044_APP23_full_project.R` in R/RStudio.
+4. Update the project root path if necessary.
+5. Run the corrected workflow sections in sequence.
 
-The repository can remain private while the manuscript/course submission is being finalized and can be made public later if desired.
+The script preserves the cumulative project history, including troubleshooting and earlier exploratory blocks. Later explicitly corrected sections represent the workflow used for the final interpretation.
+
+## Important limitations
+
+- The source dataset contains neuronal nuclei only; glia and other non-neuronal hippocampal populations are absent.
+- The processed matrix had already undergone author-level QC; all 3,280 nuclei passed the corresponding >500 detected genes and >4,000 transcript thresholds used here.
+- Mitochondrial features are absent from the processed matrix, so mitochondrial-percentage filtering is not applicable.
+- No additional computational doublet removal was performed on the processed Smart-seq2-style neuronal dataset.
+- Sample sizes are small, especially at 24 months (2 WT versus 3 APP23 mice).
+- TF activity findings do not survive multiple-testing correction.
+- CellChat is descriptive and does not provide mouse-level replicate inference.
+- Sex-associated signals should not be interpreted without verified sample sex metadata.
+
+## Documentation
+
+- `docs/METHODS.md` — detailed analysis methods
+- `docs/ANALYSIS_WORKFLOW.md` — workflow overview
+- `docs/RESULTS_SUMMARY.md` — final biological interpretation and limitations
+- `figures/supplementary/APP23_snRNAseq_Supplementary_Figures_FINAL.pdf` — assembled supplementary figures
+- `scripts/GSE141044_APP23_full_project.R` — full cumulative analysis script
+
+## Overall interpretation
+
+**APP23-associated hippocampal neuronal remodeling is subtype- and age-dependent: DG neurons exhibit early synaptic disruption followed by later structural/synaptic remodeling, while CA1-like neurons develop a pronounced late sterol/cholesterol-associated transcriptional phenotype.**
+
+## Citation
+
+Repository citation metadata are provided in `CITATION.cff`. Please also cite the original GSE141044 study when reusing the source dataset.
