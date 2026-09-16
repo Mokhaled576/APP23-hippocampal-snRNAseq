@@ -1,7 +1,12 @@
 # Supplementary figures
 
-This directory is for the finalized supplementary figures and associated source exports.
+This directory contains the finalized assembled supplementary figure collection:
 
-The project supplementary figure collection contains QC/PCA/HVG diagnostics, additional UMAP/annotation panels, pseudobulk DE visualizations, GSEA, TF activity, and additional CellChat analyses. A malformed `nCount_RNA` versus `nFeature_RNA` panel was excluded from the finalized supplementary document and should not be restored.
+- `APP23_snRNAseq_Supplementary_Figures_FINAL.pdf` — final 52-page supplementary figure document
+- `APP23_snRNAseq_Supplementary_Figures_FINAL.docx` — editable source document
 
-Where practical, retain individual publication-resolution figure files in addition to the assembled supplementary document.
+The collection includes QC/PCA/HVG diagnostics, additional UMAP and annotation panels, pseudobulk differential-expression visualizations, GSEA, TF activity, and additional CellChat analyses.
+
+A malformed `nCount_RNA` versus `nFeature_RNA` scatter panel was removed from the final document and the remaining Supplementary Figure S1 panels were renumbered accordingly. It should not be restored.
+
+The assembled supplement is intended to accompany the main figures while preserving the broader analysis diagnostics and exploratory results.
